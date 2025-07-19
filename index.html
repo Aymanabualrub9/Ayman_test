@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EIRP & Safe Distance Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 40px 20px 20px;  
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 30px 0;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 900px;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .section {
+      flex: 1 1 0;
+      padding: 0 40px;
+      box-sizing: border-box;
+      min-width: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section.left {
+      border-right: 2px solid #ddd;
+    }
+
+    .section h2 {
+      font-size: 18px;
+      color: #0056b3;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .unit-options {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .unit-options label {
+      font-weight: normal;
+      font-size: 13px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      margin-top: 10px;
+      flex: 1 1 auto;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .calculate-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .reset-btn {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      background-color: #f1f8ff;
+      border-left: 5px solid #007bff;
+      padding: 10px;
+      font-size: 14px;
+      flex-shrink: 0;
+      word-wrap: break-word;
+    }
+
+    .result-box strong {
+      font-weight: bold;
+    }
+
+    #customStandardInput {
+      margin-bottom: 15px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* Footer styling */
+    .footer {
+      margin-top: 40px;
+      padding: 15px 20px;
+      max-width: 900px;
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      box-sizing: border-box;
+      word-wrap: break-word;
+      user-select: none;
+    }
+
+    .footer b {
+      color: #000;
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 960px) {
+      .container {
+        flex-direction: column;
+        width: 100%;
+        padding: 20px 0;
+      }
+      .section {
+        border-right: none !important;
+        padding: 20px 30px;
+      }
+      .footer {
+        max-width: 100%;
+        border-radius: 0;
+        padding: 20px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Left Panel -->
+    <div class="section left">
+      <h2>Recommended Minimum Safe Distance from Electromagnetic Fields</h2>
+
+      <label for="eirpInput">EIRP (Watt)</label>
+      <input type="text" id="eirpInput" placeholder="Enter the EIRP (W)">
+
+      <label for="frequency">Frequency (Valid Range: 30 MHz – 300,000 MHz) </label>
+      <input type="text" id="frequency" placeholder="Enter the frequency (MHz)">
+
+      <label for="standard">Choose a safety standard</label>
+      <select id="standard" onchange="toggleCustomStandard()">
+        <option value="icnirp_general">ICNIRP - General Public</option>
+        <option value="icnirp_occupational">ICNIRP - Occupational</option>
+        <option value="custom">Set Your Own Standard</option>
+      </select>
+
+      <div id="customStandardInput" style="display: none;">
+        <label for="customSLimit">Enter Maximum Permitted Power Density (W/m²)</label>
+        <input type="text" id="customSLimit" placeholder="Enter the power density in W/m²">
+      </div>
+
+      <div class="button-row">
+        <button class="calculate-btn" onclick="calculateDistance()">Calculate</button>
+        <button class="reset-btn" onclick="resetFields()">Reset</button>
+      </div>
+
+      <div class="result-box">
+        <strong>Safe distance from transmitter (calculated in meters):</strong>
+        <br>
+        <span id="distanceResult"></span>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="section right">
+      <h2>Effective Isotropic Radiated Power (EIRP) Calculator</h2>
+
+      <label for="outputPower">Output Power</label>
+      <input type="text" id="outputPower" placeholder="Enter Transmit Power (W)">
+
+      <div class="unit-options">
+        <label><input type="radio" name="unit" value="dBm" checked> dBm</label>
+        <label><input type="radio" name="unit" value="Watt"> Watt</label>
+      </div>
+
+      <label for="cableLoss">Cable and Connector Losses -(dB)</label>
+      <input type="text" id="cableLoss" placeholder="Enter the Cable and Connector Losses (dB) ">
+
+      <label for="antennaGain">Antenna Gain -(dBi)</label>
+      <input type="text" id="antennaGain" placeholder="Enter The Antenna Gain (dBi)">
+
+      <div class="button-row">
+        <button class="calculate-btn" onclick="calculateEIRP()">Calculate</button>
+        <button class="reset-btn" onclick="resetFields()">Reset</button>
+      </div>
+
+      <div class="result-box">
+        <strong>EIRP (Watt):</strong> <span id="eirpResult"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer" role="contentinfo" aria-label="Footer information">
+    <b>Developed by Eng. Ayman Abualrub–© 2025 </b>
+
+    Email: <a href="mailto:aabualrub@tra.gov.ps">aabualrub@tra.gov.ps</a> <br>
+    Phone: +970562881188
+
+  </div>
+
+  <script>
+    let currentEIRP_W = 0;
+
+    function getSelectedUnit() {
+      const units = document.getElementsByName("unit");
+      for (const unit of units) {
+        if (unit.checked) return unit.value;
+      }
+      return "dBm";
+    }
+
+    function calculateEIRP() {
+      const unit = getSelectedUnit();
+      let pT = parseFloat(document.getElementById("outputPower").value);
+      const lC = parseFloat(document.getElementById("cableLoss").value);
+      const gA = parseFloat(document.getElementById("antennaGain").value);
+
+      if (isNaN(pT) || isNaN(lC) || isNaN(gA)) {
+        document.getElementById("eirpResult").textContent = "Enter valid numeric values.";
+        return;
+      }
+
+      if (unit === "Watt") {
+        pT = 10 * Math.log10(pT) + 30;
+      }
+
+      const eirp_dBm = pT + gA - lC;
+      const eirp_Watt = Math.pow(10, (eirp_dBm - 30) / 10);
+      currentEIRP_W = eirp_Watt;
+
+      document.getElementById("eirpResult").textContent = eirp_Watt.toFixed(4) + " W";
+    }
+
+    function toggleCustomStandard() {
+      const standard = document.getElementById("standard").value;
+      document.getElementById("customStandardInput").style.display = (standard === "custom") ? "block" : "none";
+    }
+
+    function calculateDistance() {
+      const freq = parseFloat(document.getElementById("frequency").value);
+      const standard = document.getElementById("standard").value;
+      const inputEIRP = parseFloat(document.getElementById("eirpInput").value);
+
+      if (isNaN(freq) || isNaN(inputEIRP)) {
+        document.getElementById("distanceResult").textContent = "Invalid frequency or EIRP.";
+        return;
+      }
+
+      let s_limit;
+
+      if (standard === "icnirp_general") {
+        // ICNIRP - General Public limits
+        if (freq >= 30 && freq <= 400) {
+          s_limit = 2;
+        } else if (freq > 400 && freq <= 2000) {
+          s_limit = freq / 200;
+        } else if (freq > 2000 && freq <= 300000) {
+          s_limit = 10;
+        } else {
+          document.getElementById("distanceResult").textContent = "Frequency out of supported range.";
+          return;
+        }
+      } else if (standard === "icnirp_occupational") {
+        // ICNIRP - Occupational limits
+        if (freq >= 30 && freq <= 400) {
+          s_limit = 10;
+        } else if (freq > 400 && freq <= 2000) {
+          s_limit = freq / 40;
+        } else if (freq > 2000 && freq <= 300000) {
+          s_limit = 50;
+        } else {
+          document.getElementById("distanceResult").textContent = "Frequency out of supported range.";
+          return;
+        }
+      } else {
+        s_limit = parseFloat(document.getElementById("customSLimit").value);
+        if (isNaN(s_limit) || s_limit <= 0) {
+          document.getElementById("distanceResult").textContent = "Invalid power density.";
+          return;
+        }
+      }
+
+      const r = Math.sqrt(inputEIRP / (4 * Math.PI * s_limit));
+      document.getElementById("distanceResult").textContent = r.toFixed(2);
+    }
+
+    function resetFields() {
+      document.getElementById("outputPower").value = "";
+      document.getElementById("cableLoss").value = "";
+      document.getElementById("antennaGain").value = "";
+      document.getElementById("eirpResult").textContent = "";
+      document.getElementById("frequency").value = "";
+      document.getElementById("distanceResult").textContent = "";
+      document.getElementById("eirpInput").value = "";
+      document.getElementById("customSLimit").value = "";
+      document.querySelector('input[name="unit"][value="dBm"]').checked = true;
+      document.getElementById("customStandardInput").style.display = "none";
+      currentEIRP_W = 0;
+    }
+	
+	//  right-click
+document.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+});
+
+document.onkeydown = function (e) {
+  // F12
+  if (e.key === "F12") return false;
+  // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+Shift+C
+  if (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key)) return false;
+  // Ctrl+U (view source)
+  if (e.ctrlKey && e.key === "u") return false;
+  // Ctrl+S (save)
+  if (e.ctrlKey && e.key === "s") return false;
+  // Ctrl+Shift+K (Firefox DevTools)
+  if (e.ctrlKey && e.shiftKey && e.key === "K") return false;
+};
+  </script>
+</body>
+</html>
+
+
+
