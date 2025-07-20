@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EIRP & Safe Distance Calculator</title>
   <style>
+    /* [نفس التنسيق كما هو] */
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f5f5f5;
@@ -129,7 +130,6 @@
       margin-top: 10px;
     }
 
-    /* Footer styling */
     .footer {
       margin-top: 40px;
       padding: 15px 20px;
@@ -162,7 +162,6 @@
       text-decoration: underline;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 960px) {
       .container {
         flex-direction: column;
@@ -183,7 +182,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Left Panel -->
     <div class="section left">
       <h2>Recommended Minimum Safe Distance from Electromagnetic Fields</h2>
 
@@ -195,8 +193,10 @@
 
       <label for="standard">Choose a safety standard</label>
       <select id="standard" onchange="toggleCustomStandard()">
-        <option value="icnirp_general">ICNIRP - General Public</option>
-        <option value="icnirp_occupational">ICNIRP - Occupational</option>
+        <option value="icnirp_general">ICNIRP - General Public-The Whole Body</option>
+        <option value="icnirp_occupational">ICNIRP - Occupational-The Whole Body</option>
+        <option value="icnirp_general_local">ICNIRP - General Public - local exposure</option>
+        <option value="icnirp_occupational_local">ICNIRP - Occupational - local exposure</option>
         <option value="custom">Set Your Own Standard</option>
       </select>
 
@@ -211,13 +211,12 @@
       </div>
 
       <div class="result-box">
-        <strong>Safe distance from transmitter (calculated in meters):</strong>
+        <strong>Minimum Safe Distance from the Transmission Tower is (Meters):</strong>
         <br>
         <span id="distanceResult"></span>
       </div>
     </div>
 
-    <!-- Right Panel -->
     <div class="section right">
       <h2>Effective Isotropic Radiated Power (EIRP) Calculator</h2>
 
@@ -246,12 +245,10 @@
     </div>
   </div>
 
-  <div class="footer" role="contentinfo" aria-label="Footer information">
+  <div class="footer">
     <b>Developed by Eng. Ayman Abualrub–©All rights reserved 2025</b>
-
     Email: <a href="mailto:aabualrub@tra.gov.ps">aabualrub@tra.gov.ps</a> <br>
     Phone: +970562881188
-
   </div>
 
   <script>
@@ -304,36 +301,58 @@
 
       let s_limit;
 
-      if (standard === "icnirp_general") {
-        // ICNIRP - General Public limits
-        if (freq >= 30 && freq <= 400) {
-          s_limit = 2;
-        } else if (freq > 400 && freq <= 2000) {
-          s_limit = freq / 200;
-        } else if (freq > 2000 && freq <= 300000) {
-          s_limit = 10;
-        } else {
-          document.getElementById("distanceResult").textContent = "Frequency out of supported range.";
+      switch (standard) {
+        case "icnirp_general":
+          s_limit = (freq >= 30 && freq <= 400) ? 2 :
+                    (freq > 400 && freq <= 2000) ? freq / 200 :
+                    (freq > 2000 && freq <= 300000) ? 10 : null;
+          break;
+        case "icnirp_occupational":
+          s_limit = (freq >= 30 && freq <= 400) ? 10 :
+                    (freq > 400 && freq <= 2000) ? freq / 40 :
+                    (freq > 2000 && freq <= 300000) ? 50 : null;
+          break;
+        case "icnirp_general_local":
+          if (freq >= 30 && freq <= 400) {
+            s_limit = 10;
+          } else if (freq > 400 && freq <= 2000) {
+            s_limit = 0.058 * freq * Math.sqrt(0.86);
+          } else if (freq > 2000 && freq <= 6000) {
+            s_limit = 40;
+          } else if (freq > 6000 && freq < 300000) {
+            s_limit = 55 / (freq / 1000) * Math.sqrt(0.177);
+          } else if (freq >= 300000) {
+            s_limit = 20;
+          }
+          break;
+        case "icnirp_occupational_local":
+          if (freq >= 30 && freq <= 400) {
+            s_limit = 50;
+          } else if (freq > 400 && freq <= 2000) {
+            s_limit = 0.29 * freq * Math.sqrt(0.86);
+          } else if (freq > 2000 && freq <= 6000) {
+            s_limit = 200;
+          } else if (freq > 6000 && freq < 300000) {
+            s_limit = 275 / (freq / 1000) * Math.sqrt(0.177);
+          } else if (freq >= 300000) {
+            s_limit = 100;
+          }
+          break;
+        case "custom":
+          s_limit = parseFloat(document.getElementById("customSLimit").value);
+          if (isNaN(s_limit) || s_limit <= 0) {
+            document.getElementById("distanceResult").textContent = "Invalid power density.";
+            return;
+          }
+          break;
+        default:
+          document.getElementById("distanceResult").textContent = "Invalid standard.";
           return;
-        }
-      } else if (standard === "icnirp_occupational") {
-        // ICNIRP - Occupational limits
-        if (freq >= 30 && freq <= 400) {
-          s_limit = 10;
-        } else if (freq > 400 && freq <= 2000) {
-          s_limit = freq / 40;
-        } else if (freq > 2000 && freq <= 300000) {
-          s_limit = 50;
-        } else {
-          document.getElementById("distanceResult").textContent = "Frequency out of supported range.";
-          return;
-        }
-      } else {
-        s_limit = parseFloat(document.getElementById("customSLimit").value);
-        if (isNaN(s_limit) || s_limit <= 0) {
-          document.getElementById("distanceResult").textContent = "Invalid power density.";
-          return;
-        }
+      }
+
+      if (!s_limit || s_limit <= 0) {
+        document.getElementById("distanceResult").textContent = "Frequency out of supported range.";
+        return;
       }
 
       const r = Math.sqrt(inputEIRP / (4 * Math.PI * s_limit));
@@ -353,21 +372,18 @@
       document.getElementById("customStandardInput").style.display = "none";
       currentEIRP_W = 0;
     }
-	
-	//  right-click
-document.addEventListener("contextmenu", function (e) {
-  e.preventDefault();
-});
 
-document.onkeydown = function (e) {
-  if (e.key === "F12") return false;
-  if (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key)) return false;
-  if (e.ctrlKey && e.key === "u") return false;
-  if (e.ctrlKey && e.key === "s") return false;
-  if (e.ctrlKey && e.shiftKey && e.key === "K") return false;
-};
+    document.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+    });
+
+    document.onkeydown = function (e) {
+      if (e.key === "F12") return false;
+      if (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key)) return false;
+      if (e.ctrlKey && e.key === "u") return false;
+      if (e.ctrlKey && e.key === "s") return false;
+      if (e.ctrlKey && e.shiftKey && e.key === "K") return false;
+    };
   </script>
 </body>
 </html>
-
-
