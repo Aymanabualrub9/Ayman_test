@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EIRP & Safe Distance Calculator</title>
   <style>
-    /* [نفس التنسيق كما هو] */
-    body {
+       body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f5f5f5;
       margin: 0;
@@ -183,7 +182,7 @@
 <body>
   <div class="container">
     <div class="section left">
-      <h2>Recommended Minimum Safe Distance from Electromagnetic Fields</h2>
+      <h2>Recommended Tool for Calculating Safe Distance from EMF Radiation</h2>
 
       <label for="eirpInput">EIRP (Watt)</label>
       <input type="text" id="eirpInput" placeholder="Enter the EIRP (W)">
@@ -193,10 +192,10 @@
 
       <label for="standard">Choose a safety standard</label>
       <select id="standard" onchange="toggleCustomStandard()">
-        <option value="icnirp_general">ICNIRP - General Public-The Whole Body</option>
-        <option value="icnirp_occupational">ICNIRP - Occupational-The Whole Body</option>
-        <option value="icnirp_general_local">ICNIRP - General Public - local exposure</option>
-        <option value="icnirp_occupational_local">ICNIRP - Occupational - local exposure</option>
+        <option value="icnirp_general">ICNIRP2020 - General Public ( The Whole Body)</option>
+        <option value="icnirp_occupational">ICNIRP2020 – Occupational ( The Whole Body)</option>
+        <option value="icnirp_general_local">ICNIRP2020 - General Public  ( local exposure)</option>
+        <option value="icnirp_occupational_local">ICNIRP2020 – Occupational ( local exposure)</option>
         <option value="custom">Set Your Own Standard</option>
       </select>
 
@@ -211,10 +210,14 @@
       </div>
 
       <div class="result-box">
-        <strong>Minimum Safe Distance from the Transmission Tower is (Meters):</strong>
+        <strong>Minimum safe distance from the antenna to avoid harmful RF exposure (in meters):</strong>
         <br>
         <span id="distanceResult"></span>
       </div>
+<div style="margin-top: 15px; text-align: center;">
+  <img src="tower.png" alt="Antenna Illustration" style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 8px; padding: 5px;" />
+</div>
+
     </div>
 
     <div class="section right">
@@ -242,11 +245,42 @@
       <div class="result-box">
         <strong>EIRP (Watt):</strong> <span id="eirpResult"></span>
       </div>
+
+      <div style="margin-top: 30px;">
+        <h2>Unit Converter (dBm / mW / W)</h2>
+
+        <label for="unitInputValue">Input Value</label>
+        <input type="text" id="unitInputValue" placeholder="Enter value to convert">
+
+        <label for="unitInputType">From</label>
+        <select id="unitInputType">
+          <option value="dBm">dBm</option>
+          <option value="mW">mW</option>
+          <option value="W">W</option>
+        </select>
+
+        <label for="unitOutputType">To</label>
+        <select id="unitOutputType">
+          <option value="dBm">dBm</option>
+          <option value="mW">mW</option>
+          <option value="W">W</option>
+        </select>
+
+        <div class="button-row">
+          <button class="calculate-btn" onclick="convertUnit()">Convert</button>
+        </div>
+
+        <div class="result-box">
+          <strong>Converted Value:</strong>
+          <br>
+          <span id="unitConvertResult"></span>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="footer">
-    <b>Developed by Eng. Ayman Abualrub–©All rights reserved 2025</b>
+    <b>Developed by Eng. Ayman Abualrub</b>
     Email: <a href="mailto:aabualrub@tra.gov.ps">aabualrub@tra.gov.ps</a> <br>
     Phone: +970562881188
   </div>
@@ -329,7 +363,7 @@
           if (freq >= 30 && freq <= 400) {
             s_limit = 50;
           } else if (freq > 400 && freq <= 2000) {
-            s_limit = 0.29 * Math.pow(freq, 0.86);;
+            s_limit = 0.29 * Math.pow(freq, 0.86);
           } else if (freq > 2000 && freq <= 6000) {
             s_limit = 200;
           } else if (freq > 6000 && freq < 300000) {
@@ -356,7 +390,7 @@
       }
 
       const r = Math.sqrt(inputEIRP / (4 * Math.PI * s_limit));
-      document.getElementById("distanceResult").textContent = r.toFixed(2);
+      document.getElementById("distanceResult").textContent = r.toFixed(2) + " meters";
     }
 
     function resetFields() {
@@ -371,6 +405,52 @@
       document.querySelector('input[name="unit"][value="dBm"]').checked = true;
       document.getElementById("customStandardInput").style.display = "none";
       currentEIRP_W = 0;
+    }
+
+    function convertUnit() {
+      const inputVal = parseFloat(document.getElementById("unitInputValue").value);
+      const from = document.getElementById("unitInputType").value;
+      const to = document.getElementById("unitOutputType").value;
+      const resultBox = document.getElementById("unitConvertResult");
+
+      if (isNaN(inputVal)) {
+        resultBox.textContent = "Enter a valid number.";
+        return;
+      }
+
+      let watts;
+      switch (from) {
+        case "dBm":
+          watts = Math.pow(10, (inputVal - 30) / 10);
+          break;
+        case "mW":
+          watts = inputVal / 1000;
+          break;
+        case "W":
+          watts = inputVal;
+          break;
+        default:
+          resultBox.textContent = "Invalid input unit.";
+          return;
+      }
+
+      let output;
+      switch (to) {
+        case "dBm":
+          output = 10 * Math.log10(watts) + 30;
+          resultBox.textContent = output.toFixed(2) + " dBm";
+          break;
+        case "mW":
+          output = watts * 1000;
+          resultBox.textContent = output.toFixed(2) + " mW";
+          break;
+        case "W":
+          output = watts;
+          resultBox.textContent = output.toFixed(4) + " W";
+          break;
+        default:
+          resultBox.textContent = "Invalid output unit.";
+      }
     }
 
     document.addEventListener("contextmenu", function (e) {
