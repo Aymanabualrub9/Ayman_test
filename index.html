@@ -25,21 +25,21 @@
       border-radius: 10px;
       padding: 30px 0;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      width: 900px;
+      width: 1200px;
       max-width: 100%;
       box-sizing: border-box;
     }
 
     .section {
       flex: 1 1 0;
-      padding: 0 40px;
+      padding: 0 20px;
       box-sizing: border-box;
-      min-width: 320px;
+      min-width: 300px;
       display: flex;
       flex-direction: column;
     }
 
-    .section.left {
+    .section.left, .section.middle {
       border-right: 2px solid #ddd;
     }
 
@@ -132,7 +132,7 @@
     .footer {
       margin-top: 40px;
       padding: 15px 20px;
-      max-width: 900px;
+      max-width: 1200px;
       width: 100%;
       background-color: #ffffff;
       border-radius: 10px;
@@ -161,52 +161,107 @@
       text-decoration: underline;
     }
 
-    /* Visualizer Styles - Integrated in left section */
-    .visualizer-container {
-      width: 100%;
-      margin-top: 20px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      padding: 15px;
-      box-sizing: border-box;
-      border: 1px solid #ddd;
+    /* RF Visualizer Styles */
+    :root {
+      --sky-blue: #87CEEB;
+      --deep-sky: #00BFFF;
+      --grass-green: #4CAF50;
+      --tree-trunk: #5D4037;
+      --tree-crown: #2E7D32;
+      --tower-color: #424242;
+      --radiation-color: rgba(255, 50, 50, 0.5);
+      --cloud-white: rgba(255, 255, 255, 0.9);
+      --control-bg: rgba(255, 255, 255, 0.8);
+      --house-brown: #8D6E63;
+      --house-roof: #6D4C41;
     }
 
-    .visualizer-title {
-      font-size: 16px;
+    #visualizer-container {
+      margin-top: 20px;
+      width: 100%;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-sizing: border-box;
+      grid-column: 1 / -1;
+    }
+
+    #visualizer-container h2 {
       color: #0056b3;
-      margin-bottom: 10px;
-      text-align: center;
-      font-weight: bold;
+      margin-top: 0;
+      font-size: 18px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    #visualizer-controls {
+      margin: 15px 0;
+      display: flex;
+      gap: 10px;
+    }
+
+    #visualizer-controls button {
+      padding: 8px 16px;
+      background: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+
+    #visualizer-controls button:hover {
+      background: #3367D6;
     }
 
     #scene {
       width: 100%;
-      height: 250px;
-      background-color: #e6f2ff;
-      border: 1px solid #ccc;
+      height: 400px;
+      background-color: #E3F2FD;
+      border-radius: 8px;
       overflow: hidden;
       position: relative;
-      box-sizing: border-box;
-      border-radius: 5px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
     #topLabel {
       position: absolute;
-      top: 5px;
+      top: 0;
       left: 0;
       width: 100%;
-      height: 25px;
+      height: 40px;
       text-align: center;
-      font-weight: bold;
-      font-size: 13px;
+      font-weight: 500;
+      font-size: 16px;
       color: #333;
-      background-color: rgba(255,255,255,0.8);
+      background: linear-gradient(to right, #f5f5f5, #e0e0e0);
       z-index: 20;
-      line-height: 25px;
+      line-height: 40px;
       user-select: none;
       pointer-events: none;
-      border-radius: 3px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #infoIndicators {
+      position: absolute;
+      top: 45px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+      z-index: 20;
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     #sceneContent {
@@ -217,119 +272,225 @@
       z-index: 5;
     }
 
+    /* Fixed elements (don't zoom) */
     .ground {
       position: absolute;
       bottom: 0;
       width: 100%;
-      height: 90px;
-      background-color: #7cfc00;
-      border-top: 2px solid #333;
-      box-shadow: inset 0 3px 6px rgba(0,100,0,0.3);
+      height: 100px;
+      background: linear-gradient(to bottom, var(--grass-green), #3E8E41);
+      border-top: 2px solid #2E7D32;
+      box-shadow: inset 0 10px 20px rgba(0, 60, 0, 0.4);
       z-index: 1;
+    }
+
+    .sun {
+      position: absolute;
+      top: 30px;
+      right: 50px;
+      width: 50px;
+      height: 50px;
+      background: radial-gradient(circle at center, #FFEB3B, #FFC107);
+      border-radius: 50%;
+      box-shadow: 0 0 30px #FFC107;
+      z-index: 3;
+    }
+
+    /* Zoomable elements */
+    #zoomGroup {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform-origin: center bottom;
+      transition: transform 0.5s ease-out;
+      z-index: 10;
+    }
+
+    /* Houses */
+    .house {
+      position: absolute;
+      bottom: 100px;
+      z-index: 8;
+    }
+
+    .house-body {
+      width: 60px;
+      height: 40px;
+      background: var(--house-brown);
+      position: relative;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .house-roof {
+      width: 70px;
+      height: 20px;
+      background: var(--house-roof);
+      position: absolute;
+      top: -15px;
+      left: -5px;
+      transform: perspective(10px) rotateX(5deg);
+      border-radius: 5px 5px 0 0;
+    }
+
+    .house-window {
+      width: 12px;
+      height: 12px;
+      background: #FFEB3B;
+      position: absolute;
+      border-radius: 2px;
+      box-shadow: 0 0 0 2px #5D4037;
+    }
+
+    .house-door {
+      width: 15px;
+      height: 20px;
+      background: #5D4037;
+      position: absolute;
+      bottom: 0;
+      border-radius: 2px 2px 0 0;
     }
 
     .tower {
       position: absolute;
-      width: 4px;
-      height: 12px;
-      background-color: #444;
-      bottom: 90px;
+      width: 6px;
+      height: 20px;
+      background: linear-gradient(to bottom, #616161, var(--tower-color));
+      bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
-      border-radius: 2px;
-      box-shadow: 0 0 3px #222 inset;
+      border-radius: 3px;
+      box-shadow: 
+        0 0 5px rgba(0, 0, 0, 0.3) inset,
+        0 2px 5px rgba(0, 0, 0, 0.2);
       z-index: 10;
+    }
+
+    .tower:after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 4px;
+      background: #757575;
+      border-radius: 50% 50% 0 0;
     }
 
     .radiation {
       position: absolute;
-      background: radial-gradient(circle at center, rgba(255, 0, 0, 0.5), rgba(255, 0, 0, 0.1) 70%);
+      background: radial-gradient(circle at center, 
+        rgba(255, 0, 0, 0.6), 
+        rgba(255, 50, 50, 0.4) 60%, 
+        rgba(255, 100, 100, 0.2) 80%);
       border-radius: 50%;
       pointer-events: none;
-      z-index: 2;
-      transform-origin: center center;
-      transition: transform 0.3s ease;
+      z-index: 15;
+      transform-origin: center bottom;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+      filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.4));
+      border: 1px solid rgba(255, 0, 0, 0.3);
     }
 
-    /* أشجار بسيطة */
+    /* Trees */
     .tree {
       position: absolute;
-      width: 15px;
-      height: 30px;
-      bottom: 70px;
-      background-color: #654321;
+      width: 12px;
+      height: 40px;
+      bottom: 60px;
+      background: linear-gradient(to right, #4E342E, var(--tree-trunk));
       border-radius: 3px;
       z-index: 9;
-      box-shadow: inset 0 0 3px #442a08;
-      transform-origin: center bottom;
-      transition: transform 0.3s ease;
+      box-shadow: 
+        inset 1px 0 3px rgba(0, 0, 0, 0.3),
+        inset -1px 0 3px rgba(0, 0, 0, 0.3);
     }
+    
     .tree:before {
       content: "";
       position: absolute;
       bottom: 100%;
       left: 50%;
       transform: translateX(-50%);
-      width: 45px;
-      height: 40px;
-      background: radial-gradient(circle at center, #0b610b 60%, #145214 90%);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+      width: 50px;
+      height: 60px;
+      background: radial-gradient(ellipse at center, 
+        var(--tree-crown) 0%, 
+        #1B5E20 70%);
+      border-radius: 50% 50% 40% 40%;
+      box-shadow: 
+        0 5px 10px rgba(0, 0, 0, 0.2),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.1);
       z-index: -1;
     }
 
-    /* مواقع الأشجار */
+    /* Tree positions */
     #tree1 {
-      left: 40%;
+      left: 35%;
     }
     #tree2 {
-      left: 55%;
+      left: 60%;
+    }
+    
+    #tree3 {
+      left: 25%;
+      height: 30px;
+      width: 10px;
+    }
+    #tree3:before {
+      width: 40px;
+      height: 45px;
+    }
+    
+    #tree4 {
+      left: 70%;
+      height: 35px;
+      width: 11px;
+    }
+    #tree4:before {
+      width: 45px;
+      height: 50px;
     }
 
-    /* غيوم بسيطة */
+    /* Clouds */
     .cloud {
       position: absolute;
-      background: #fff;
+      background: var(--cloud-white);
       border-radius: 50%;
-      opacity: 0.8;
-      box-shadow:
-        15px 8px 0 0 #fff,
-        30px 0 0 0 #fff,
-        45px 8px 0 0 #fff,
-        20px 15px 0 0 #fff,
-        35px 15px 0 0 #fff;
-      animation: floatClouds 25s linear infinite;
-      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+      opacity: 0.9;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      animation: floatClouds 60s linear infinite;
       z-index: 15;
     }
 
-    .cloud2 {
-      top: 40px;
-      left: 250px;
-      width: 80px;
-      height: 30px;
+    .cloud1 {
+      top: 50px;
+      left: -150px;
+      width: 120px;
+      height: 40px;
       animation-delay: 0s;
     }
 
-    .cloud1 {
-      top: 15px;
-      left: 60px;
-      width: 90px;
-      height: 40px;
-      animation-delay: 12s;
-      opacity: 0.7;
+    .cloud2 {
+      top: 80px;
+      left: -200px;
+      width: 150px;
+      height: 50px;
+      animation-delay: 15s;
+      opacity: 0.8;
     }
 
     @keyframes floatClouds {
       0% {
-        transform: translateX(-100px);
+        transform: translateX(-200px);
       }
       100% {
-        transform: translateX(400px);
+        transform: translateX(900px);
       }
     }
 
-    @media (max-width: 960px) {
+    /* Responsive design */
+    @media (max-width: 1200px) {
       .container {
         flex-direction: column;
         width: 100%;
@@ -344,14 +505,20 @@
         border-radius: 0;
         padding: 20px 10px;
       }
-      .visualizer-container {
-        margin-bottom: 20px;
+      
+      #visualizer-container {
+        width: 100%;
+      }
+      
+      #scene {
+        height: 350px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- First Column: Safe Distance Calculator -->
     <div class="section left">
       <h2>Recommended Tool for Calculating Safe Distance from EMF Radiation</h2>
 
@@ -385,33 +552,10 @@
         <br>
         <span id="distanceResult"></span>
       </div>
-
-      <!-- Visualizer integrated here -->
-      <div class="visualizer-container">
-        <div class="visualizer-title">Radiation Pattern Visualizer</div>
-        <div id="scene">
-          <div id="topLabel">
-            Antenna pattern (in meters): 
-            <span id="distanceValue">--</span>
-          </div>
-
-          <div id="sceneContent">
-            <div class="ground"></div>
-            <div class="tower" id="tower"></div>
-            <div class="radiation" id="radiationPattern"></div>
-
-            <div class="tree" id="tree1"></div>
-            <div class="tree" id="tree2"></div>
-          </div>
-
-          <div class="cloud cloud1"></div>
-          <div class="cloud cloud2"></div>
-        </div>
-      </div>
-
     </div>
 
-    <div class="section right">
+    <!-- Second Column: EIRP Calculator -->
+    <div class="section middle">
       <h2>Effective Isotropic Radiated Power (EIRP) Calculator</h2>
 
       <label for="outputPower">Output Power</label>
@@ -436,37 +580,99 @@
       <div class="result-box">
         <strong>EIRP (Watt):</strong> <span id="eirpResult"></span>
       </div>
+    </div>
 
-      <div style="margin-top: 30px;">
-        <h2>Unit Converter (dBm / mW / W)</h2>
+    <!-- Third Column: Unit Converter -->
+    <div class="section right">
+      <h2>Unit Converter (dBm / mW / W)</h2>
 
-        <label for="unitInputValue">Input Value</label>
-        <input type="text" id="unitInputValue" placeholder="Enter value to convert">
+      <label for="unitInputValue">Input Value</label>
+      <input type="text" id="unitInputValue" placeholder="Enter value to convert">
 
-        <label for="unitInputType">From</label>
-        <select id="unitInputType">
-          <option value="dBm">dBm</option>
-          <option value="mW">mW</option>
-          <option value="W">W</option>
-        </select>
+      <label for="unitInputType">From</label>
+      <select id="unitInputType">
+        <option value="dBm">dBm</option>
+        <option value="mW">mW</option>
+        <option value="W">W</option>
+      </select>
 
-        <label for="unitOutputType">To</label>
-        <select id="unitOutputType">
-          <option value="dBm">dBm</option>
-          <option value="mW">mW</option>
-          <option value="W">W</option>
-        </select>
+      <label for="unitOutputType">To</label>
+      <select id="unitOutputType">
+        <option value="dBm">dBm</option>
+        <option value="mW">mW</option>
+        <option value="W">W</option>
+      </select>
 
-        <div class="button-row">
-          <button class="calculate-btn" onclick="convertUnit()">Convert</button>
-        </div>
+      <div class="button-row">
+        <button class="calculate-btn" onclick="convertUnit()">Convert</button>
+        <button class="reset-btn" onclick="resetUnitConverter()">Reset</button>
+      </div>
 
-        <div class="result-box">
-          <strong>Converted Value:</strong>
-          <br>
-          <span id="unitConvertResult"></span>
+      <div class="result-box">
+        <strong>Converted Value:</strong>
+        <br>
+        <span id="unitConvertResult"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visualizer Container (below all three columns) -->
+  <div id="visualizer-container">
+    <h2>RF Radiation Visualizer</h2>
+    <div id="visualizer-controls">
+      <button onclick="animateRadiation()">Animate Radiation</button>
+    </div>
+    <div id="scene">
+      <div id="topLabel">
+        Harmful RF exposure(<span id="distanceValue">5.00</span> meters)
+      </div>
+
+      <div id="infoIndicators">
+        <div class="info-box">Scale: 20px = 1m</div>
+        <div class="info-box">Zoom: 1x</div>
+      </div>
+
+      <div id="sceneContent">
+        <!-- Fixed elements (ground and sun) -->
+        <div class="ground"></div>
+        <div class="sun"></div>
+        
+        <!-- Zoomable group -->
+        <div id="zoomGroup">
+          <div class="tower" id="tower"></div>
+          
+          <!-- Trees -->
+          <div class="tree" id="tree1"></div>
+          <div class="tree" id="tree2"></div>
+          <div class="tree" id="tree3"></div>
+          <div class="tree" id="tree4"></div>
+          
+          <!-- Houses -->
+          <div class="house" style="left: 15%;">
+            <div class="house-roof"></div>
+            <div class="house-body">
+              <div class="house-window" style="top: 10px; left: 10px;"></div>
+              <div class="house-window" style="top: 10px; right: 10px;"></div>
+              <div class="house-door" style="left: 22px;"></div>
+            </div>
+          </div>
+          
+          <div class="house" style="right: 20%;">
+            <div class="house-roof"></div>
+            <div class="house-body">
+              <div class="house-window" style="top: 10px; left: 10px;"></div>
+              <div class="house-window" style="top: 10px; right: 10px;"></div>
+              <div class="house-door" style="left: 22px;"></div>
+            </div>
+          </div>
+          
+          <!-- Radiation -->
+          <div class="radiation" id="radiationPattern"></div>
         </div>
       </div>
+
+      <div class="cloud cloud1"></div>
+      <div class="cloud cloud2"></div>
     </div>
   </div>
 
@@ -478,7 +684,12 @@
 
   <script>
     let currentEIRP_W = 0;
-    let currentSafeDistance = 0;
+    let animationId = null;
+    const pixelsPerMeter = 20;
+    const firstZoomThreshold = 14;
+    const secondZoomThreshold = 41;
+    const firstZoomFactor = 3;
+    const secondZoomFactor = 6;
 
     function getSelectedUnit() {
       const units = document.getElementsByName("unit");
@@ -582,51 +793,10 @@
       }
 
       const r = Math.sqrt(inputEIRP / (4 * Math.PI * s_limit));
-      currentSafeDistance = r;
       document.getElementById("distanceResult").textContent = r.toFixed(2) + " meters";
       
-      // Update the visualizer automatically
-      updateRadiationVisualizer(r);
-    }
-
-    function updateRadiationVisualizer(value) {
-      if (isNaN(value) || value <= 0) return;
-
-      document.getElementById('distanceValue').textContent = value.toFixed(2);
-
-      const pixelsPerMeter = 8; // Adjusted for smaller container
-      const scene = document.getElementById('scene');
-      const radiation = document.getElementById('radiationPattern');
-      const tower = document.getElementById('tower');
-      const tree1 = document.getElementById('tree1');
-      const tree2 = document.getElementById('tree2');
-
-      let scale = 1;
-      if (value > 30) {
-        scale = 1 / 3; // زوم اوت 3 مرات
-      }
-
-      const centerX = scene.offsetWidth / 2;
-
-      const diameter = value * 2 * pixelsPerMeter;
-      const ellipseHeight = diameter;
-
-      const towerBottom = 90;
-      const towerHeight = 12;
-      const centerOfTower = towerBottom + (towerHeight / 2);
-      const centerY = centerOfTower - (ellipseHeight / 2);
-
-      // تحديث حجم وموقع دائرة الإشعاع
-      radiation.style.width = `${diameter}px`;
-      radiation.style.height = `${ellipseHeight}px`;
-      radiation.style.left = `${centerX - (diameter / 2)}px`;
-      radiation.style.bottom = `${centerY}px`;
-      radiation.style.transform = `scale(${scale})`;
-
-      // تكبير/تصغير البرج والأشجار بنفس النسبة
-      tower.style.transform = `translateX(-50%) scale(${scale})`;
-      tree1.style.transform = `scale(${scale})`;
-      tree2.style.transform = `scale(${scale})`;
+      // Update the visualizer with the calculated distance
+      updateRadiation(r);
     }
 
     function resetFields() {
@@ -641,10 +811,16 @@
       document.querySelector('input[name="unit"][value="dBm"]').checked = true;
       document.getElementById("customStandardInput").style.display = "none";
       currentEIRP_W = 0;
-      currentSafeDistance = 0;
-      document.getElementById('distanceValue').textContent = "--";
-      document.getElementById('radiationPattern').style.width = "0";
-      document.getElementById('radiationPattern').style.height = "0";
+      
+      // Reset visualizer
+      updateRadiation(5);
+    }
+
+    function resetUnitConverter() {
+      document.getElementById("unitInputValue").value = "";
+      document.getElementById("unitInputType").selectedIndex = 0;
+      document.getElementById("unitOutputType").selectedIndex = 0;
+      document.getElementById("unitConvertResult").textContent = "";
     }
 
     function convertUnit() {
@@ -692,6 +868,85 @@
           resultBox.textContent = "Invalid output unit.";
       }
     }
+
+    // RF Visualizer Functions
+    function updateRadiation(value) {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      
+      const inputValue = value;
+      if (isNaN(inputValue) || inputValue <= 0) {
+        return;
+      }
+
+      const displayValue = Math.min(inputValue, 100);
+      document.getElementById('distanceValue').textContent = displayValue.toFixed(2);
+
+      const scene = document.getElementById('scene');
+      const zoomGroup = document.getElementById('zoomGroup');
+      const radiation = document.getElementById('radiationPattern');
+      const zoomIndicator = document.querySelectorAll('.info-box')[1];
+
+      // Calculate zoom
+      let zoom = 1;
+      if (displayValue > secondZoomThreshold) {
+        zoom = 1 / secondZoomFactor;
+        zoomIndicator.textContent = `Zoom: ${secondZoomFactor}x`;
+      } else if (displayValue > firstZoomThreshold) {
+        zoom = 1 / firstZoomFactor;
+        zoomIndicator.textContent = `Zoom: ${firstZoomFactor}x`;
+      } else {
+        zoomIndicator.textContent = "Zoom: 1x";
+      }
+
+      const centerX = scene.offsetWidth / 2;
+      const diameter = displayValue * 2 * pixelsPerMeter;
+      const radiationHeight = diameter;
+
+      const towerBottom = 100;
+      const towerHeight = 20;
+      const centerOfTower = towerBottom + (towerHeight / 2);
+      const centerY = centerOfTower - (radiationHeight / 2);
+
+      // Apply zoom to zoomable group only
+      zoomGroup.style.transform = `scale(${zoom})`;
+
+      // Update radiation pattern
+      radiation.style.width = `${diameter}px`;
+      radiation.style.height = `${radiationHeight}px`;
+      radiation.style.left = `${centerX - (diameter / 2)}px`;
+      radiation.style.bottom = `${centerY}px`;
+    }
+
+    function animateRadiation() {
+      let start = null;
+      const duration = 6000;
+      const minValue = 1;
+      const maxValue = parseFloat(document.getElementById('distanceResult').textContent) || 5;
+      
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = (timestamp - start) / duration;
+        
+        if (progress < 1) {
+          const currentValue = minValue + (maxValue - minValue) * Math.sin(progress * Math.PI);
+          updateRadiation(currentValue);
+          animationId = requestAnimationFrame(step);
+        } else {
+          updateRadiation(maxValue);
+          animationId = null;
+        }
+      }
+      
+      animationId = requestAnimationFrame(step);
+    }
+
+    // Initialize visualizer when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      updateRadiation(5);
+    });
 
     document.addEventListener("contextmenu", function (e) {
       e.preventDefault();
