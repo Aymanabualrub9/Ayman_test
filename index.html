@@ -9,7 +9,7 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: #f5f5f5;
       margin: 0;
-      padding: 40px 20px 20px;  
+      padding: 20px;  
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -17,33 +17,25 @@
       box-sizing: border-box;
     }
 
-    .container {
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 0;
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 30px 0;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
       width: 1200px;
       max-width: 100%;
+    }
+
+    .panel {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
     }
 
-    .section {
-      flex: 1 1 0;
-      padding: 0 20px;
-      box-sizing: border-box;
-      min-width: 300px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .section.left, .section.middle {
-      border-right: 2px solid #ddd;
-    }
-
-    .section h2 {
+    .panel h2 {
       font-size: 18px;
       color: #0056b3;
       margin-bottom: 20px;
@@ -58,7 +50,7 @@
       display: block;
     }
 
-    input[type="text"], select {
+    input[type="text"], input[type="number"], select {
       width: 100%;
       padding: 8px 10px;
       margin-bottom: 15px;
@@ -161,6 +153,99 @@
       text-decoration: underline;
     }
 
+    /* RF Monitor Styles */
+    #rfMonitor .container {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 25px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    #rfMonitor h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+    
+    #rfMonitor .control-panel {
+      margin: 15px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+    
+    #rfMonitor label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+      color: #333;
+    }
+    
+    #rfMonitor input[type="number"] {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 200px;
+      margin: 0 auto;
+      text-align: center;
+      background: #fff;
+      color: #333;
+    }
+    
+    #rfMonitor #heatmap {
+      width: 100%;
+      height: 400px;
+      margin: 20px auto;
+      display: block;
+      border-radius: 4px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border: 1px solid #ddd;
+    }
+    
+    #rfMonitor .legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    
+    #rfMonitor .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9em;
+    }
+    
+    #rfMonitor .legend-color {
+      width: 15px;
+      height: 15px;
+      border-radius: 3px;
+    }
+    
+    #rfMonitor .danger-label {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    #rfMonitor .zoom-label {
+      text-align: center;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #666;
+    }
+
     /* RF Visualizer Styles */
     :root {
       --sky-blue: #87CEEB;
@@ -177,13 +262,12 @@
     }
 
     #visualizer-container {
-      margin-top: 20px;
+      grid-column: 1 / -1;
       width: 100%;
       background: white;
       border-radius: 10px;
       padding: 20px;
       box-sizing: border-box;
-      grid-column: 1 / -1;
     }
 
     #visualizer-container h2 {
@@ -490,37 +574,35 @@
     }
 
     /* Responsive design */
-    @media (max-width: 1200px) {
-      .container {
-        flex-direction: column;
+    @media (max-width: 900px) {
+      .grid-container {
+        grid-template-columns: 1fr;
         width: 100%;
-        padding: 20px 0;
-      }
-      .section {
-        border-right: none !important;
-        padding: 20px 30px;
-      }
-      .footer {
-        max-width: 100%;
-        border-radius: 0;
-        padding: 20px 10px;
       }
       
       #visualizer-container {
-        width: 100%;
+        grid-column: 1;
       }
       
-      #scene {
-        height: 350px;
+      #rfMonitor, #unitConverter {
+        grid-column: 1;
+      }
+      
+      #eirpCalculator, #safeDistanceCalculator {
+        grid-column: 1;
+      }
+      
+      .panel {
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- First Column: Safe Distance Calculator -->
-    <div class="section left">
-      <h2>Recommended Tool for Calculating Safe Distance to avoid harmful RF exposure </h2>
+  <div class="grid-container">
+    <!-- First Column, First Row: Safe Distance Calculator -->
+    <div class="panel" id="safeDistanceCalculator">
+      <h2>Recommended Tool for Calculating Safe Distance to avoid harmful RF exposure</h2>
 
       <label for="eirpInput">EIRP (Watt)</label>
       <input type="text" id="eirpInput" placeholder="Enter the EIRP (W)">
@@ -530,10 +612,10 @@
 
       <label for="standard">Choose a safety standard</label>
       <select id="standard" onchange="toggleCustomStandard()">
-        <option value="icnirp_general">ICNIRP2020 - General Public ( The Whole Body)</option>
-        <option value="icnirp_occupational">ICNIRP2020 – Occupational ( The Whole Body)</option>
-        <option value="icnirp_general_local">ICNIRP2020 - General Public  ( local exposure)</option>
-        <option value="icnirp_occupational_local">ICNIRP2020 – Occupational ( local exposure)</option>
+        <option value="icnirp_general">ICNIRP2020 - General Public (The Whole Body)</option>
+        <option value="icnirp_occupational">ICNIRP2020 – Occupational (The Whole Body)</option>
+        <option value="icnirp_general_local">ICNIRP2020 - General Public (local exposure)</option>
+        <option value="icnirp_occupational_local">ICNIRP2020 – Occupational (local exposure)</option>
         <option value="custom">Set Your Own Standard</option>
       </select>
 
@@ -554,8 +636,8 @@
       </div>
     </div>
 
-    <!-- Second Column: EIRP Calculator -->
-    <div class="section middle">
+    <!-- Second Column, First Row: EIRP Calculator -->
+    <div class="panel" id="eirpCalculator">
       <h2>Effective Isotropic Radiated Power (EIRP) Calculator</h2>
 
       <label for="outputPower">Output Power</label>
@@ -582,8 +664,36 @@
       </div>
     </div>
 
-    <!-- Third Column: Unit Converter -->
-    <div class="section right">
+    <!-- First Column, Second Row: RF Monitor -->
+    <div class="panel" id="rfMonitor">
+      <div class="container">
+        <h1></h1>
+        
+        <div class="control-panel">
+          <label for="dangerRadius"></label>
+          <input type="number" id="dangerRadius" value="5" min="0" max="100" step="0.1">
+        </div>
+        
+        <canvas id="heatmap" width="600" height="400"></canvas>
+        
+        <div class="danger-label" id="dangerLabel"></div>
+        <div class="zoom-label" id="zoomLabel"></div>
+        
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background: #ff0000;"></div>
+            <span>Harmful RF exposure Area</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #ffffff; border: 1px solid #ccc;"></div>
+            <span>Non-Harmful RF area</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Column, Second Row: Unit Converter -->
+    <div class="panel" id="unitConverter">	
       <h2>Unit Converter (dBm / mW / W)</h2>
 
       <label for="unitInputValue">Input Value</label>
@@ -614,66 +724,66 @@
         <span id="unitConvertResult"></span>
       </div>
     </div>
-  </div>
 
-  <!-- Visualizer Container (below all three columns) -->
-  <div id="visualizer-container">
-    <h2>RF Radiation Visualizer</h2>
-    <div id="visualizer-controls">
-      <button onclick="animateRadiation()">Animate Radiation</button>
-    </div>
-    <div id="scene">
-      <div id="topLabel">
-        Minimum safe distance to avoid harmful RF exposure, according to your chosen safety criteria (in meters):
-(<span id="distanceValue">5.00</span> meters)
+    <!-- Third Row: RF Visualizer (spans both columns) -->
+    <div id="visualizer-container">
+      <h2>RF Radiation Visualizer</h2>
+      <div id="visualizer-controls">
+        <button onclick="animateRadiation()">Animate Radiation</button>
       </div>
-
-      <div id="infoIndicators">
-        <div class="info-box">Scale: 20px = 1m</div>
-        <div class="info-box">Zoom: 1x</div>
-      </div>
-
-      <div id="sceneContent">
-        <!-- Fixed elements (ground and sun) -->
-        <div class="ground"></div>
-        <div class="sun"></div>
-        
-        <!-- Zoomable group -->
-        <div id="zoomGroup">
-          <div class="tower" id="tower"></div>
-          
-          <!-- Trees -->
-          <div class="tree" id="tree1"></div>
-          <div class="tree" id="tree2"></div>
-          <div class="tree" id="tree3"></div>
-          <div class="tree" id="tree4"></div>
-          
-          <!-- Houses -->
-          <div class="house" style="left: 15%;">
-            <div class="house-roof"></div>
-            <div class="house-body">
-              <div class="house-window" style="top: 10px; left: 10px;"></div>
-              <div class="house-window" style="top: 10px; right: 10px;"></div>
-              <div class="house-door" style="left: 22px;"></div>
-            </div>
-          </div>
-          
-          <div class="house" style="right: 20%;">
-            <div class="house-roof"></div>
-            <div class="house-body">
-              <div class="house-window" style="top: 10px; left: 10px;"></div>
-              <div class="house-window" style="top: 10px; right: 10px;"></div>
-              <div class="house-door" style="left: 22px;"></div>
-            </div>
-          </div>
-          
-          <!-- Radiation -->
-          <div class="radiation" id="radiationPattern"></div>
+      <div id="scene">
+        <div id="topLabel">
+          Minimum safe distance to avoid harmful RF exposure, according to your chosen safety criteria (in meters):
+          (<span id="distanceValue">5.00</span> meters)
         </div>
-      </div>
 
-      <div class="cloud cloud1"></div>
-      <div class="cloud cloud2"></div>
+        <div id="infoIndicators">
+          <div class="info-box">Scale: 20px = 1m</div>
+          <div class="info-box">Zoom: 1x</div>
+        </div>
+
+        <div id="sceneContent">
+          <!-- Fixed elements (ground and sun) -->
+          <div class="ground"></div>
+          <div class="sun"></div>
+          
+          <!-- Zoomable group -->
+          <div id="zoomGroup">
+            <div class="tower" id="tower"></div>
+            
+            <!-- Trees -->
+            <div class="tree" id="tree1"></div>
+            <div class="tree" id="tree2"></div>
+            <div class="tree" id="tree3"></div>
+            <div class="tree" id="tree4"></div>
+            
+            <!-- Houses -->
+            <div class="house" style="left: 15%;">
+              <div class="house-roof"></div>
+              <div class="house-body">
+                <div class="house-window" style="top: 10px; left: 10px;"></div>
+                <div class="house-window" style="top: 10px; right: 10px;"></div>
+                <div class="house-door" style="left: 22px;"></div>
+              </div>
+            </div>
+            
+            <div class="house" style="right: 20%;">
+              <div class="house-roof"></div>
+              <div class="house-body">
+                <div class="house-window" style="top: 10px; left: 10px;"></div>
+                <div class="house-window" style="top: 10px; right: 10px;"></div>
+                <div class="house-door" style="left: 22px;"></div>
+              </div>
+            </div>
+            
+            <!-- Radiation -->
+            <div class="radiation" id="radiationPattern"></div>
+          </div>
+        </div>
+
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+      </div>
     </div>
   </div>
 
@@ -691,6 +801,21 @@
     const secondZoomThreshold = 41;
     const firstZoomFactor = 3;
     const secondZoomFactor = 6;
+
+    // RF Monitor variables
+    const canvas = document.getElementById('heatmap');
+    const ctx = canvas.getContext('2d');
+    const input = document.getElementById('dangerRadius');
+    const dangerLabel = document.getElementById('dangerLabel');
+    const zoomLabel = document.getElementById('zoomLabel');
+    
+    // RF Monitor configuration
+    let dangerRadiusMeters = parseFloat(input.value);
+    let pulse = 0;
+    let waves = [];
+    let lastPulseTime = 0;
+    const pulseInterval = 500;
+    let zoomFactor = 1;
 
     function getSelectedUnit() {
       const units = document.getElementsByName("unit");
@@ -798,6 +923,11 @@
       
       // Update the visualizer with the calculated distance
       updateRadiation(r);
+      
+      // Update the RF Monitor with the calculated distance
+      dangerRadiusMeters = r;
+      input.value = r.toFixed(2);
+      dangerLabel.textContent = `${r.toFixed(2)}m`;
     }
 
     function resetFields() {
@@ -815,6 +945,12 @@
       
       // Reset visualizer
       updateRadiation(5);
+      
+      // Reset RF Monitor
+      dangerRadiusMeters = 5;
+      input.value = "5";
+      dangerLabel.textContent = "5.0m";
+      zoomLabel.textContent = "";
     }
 
     function resetUnitConverter() {
@@ -878,7 +1014,7 @@
       }
       
       const inputValue = value;
-      if (isNaN(inputValue) || inputValue <= 0) {
+      if (isNaN(inputValue)) {
         return;
       }
 
@@ -944,9 +1080,148 @@
       animationId = requestAnimationFrame(step);
     }
 
-    // Initialize visualizer when page loads
+    // RF Monitor Functions
+    function drawVisibleTower(cx, cy) {
+      // Make tower more visible but still small
+      ctx.fillStyle = '#333';
+      ctx.fillRect(cx - 5, cy - 5, 10, 5); // Base
+      
+      ctx.fillStyle = '#555';
+      ctx.fillRect(cx - 3, cy - 25, 6, 25); // Pole
+      
+      ctx.fillStyle = '#777';
+      ctx.fillRect(cx - 4, cy - 30, 8, 3); // Antenna housing
+      
+      ctx.fillStyle = '#000';
+      ctx.fillRect(cx - 1, cy - 35, 2, 5); // Antenna
+      
+      // Pulsing red light
+      ctx.beginPath();
+      ctx.arc(cx, cy - 28, 3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 0, 0, ${0.5 + Math.sin(pulse * 3) * 0.3})`;
+      ctx.fill();
+    }
+
+    function drawRadiationWaves(cx, cy) {
+      const centerY = cy - 28;
+      const maxRadius = dangerRadiusMeters * 10;
+      
+      // Create new waves more frequently
+      const now = Date.now();
+      if (now - lastPulseTime > pulseInterval) {
+        waves.push({
+          radius: 5,
+          alpha: 0.7,
+          speed: 1,
+          color: `hsl(${0 + Math.random() * 30}, 100%, 50%)`
+        });
+        lastPulseTime = now;
+      }
+      
+      // Draw all waves
+      for (let i = waves.length - 1; i >= 0; i--) {
+        const wave = waves[i];
+        wave.radius += wave.speed;
+        wave.alpha *= 0.96;
+        
+        if (wave.alpha <= 0.05 || wave.radius > maxRadius) {
+          waves.splice(i, 1);
+          continue;
+        }
+        
+        // Main wave
+        ctx.beginPath();
+        ctx.arc(cx, centerY, wave.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `${wave.color.replace(')', `, ${wave.alpha})`)}`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Secondary wave
+        if (wave.radius > 15) {
+          ctx.beginPath();
+          ctx.arc(cx, centerY, wave.radius - 10, 0, Math.PI * 2);
+          ctx.strokeStyle = `${wave.color.replace(')', `, ${wave.alpha * 0.6})`)}`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+
+    function drawDangerZone(cx, cy) {
+      const centerY = cy - 28;
+      const radius = dangerRadiusMeters * 10;
+      
+      if (dangerRadiusMeters <= 0) return;
+      
+      // Gradient danger zone - more red near the tower
+      const gradient = ctx.createRadialGradient(cx, centerY, 0, cx, centerY, radius);
+      gradient.addColorStop(0, 'rgba(255, 0, 0, 0.8)');
+      gradient.addColorStop(0.7, 'rgba(255, 0, 0, 0.4)');
+      gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+      
+      ctx.beginPath();
+      ctx.arc(cx, centerY, radius, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      
+      // Boundary
+      ctx.beginPath();
+      ctx.arc(cx, centerY, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function drawHeatmap() {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      
+      // Clear canvas with pure white background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Enhanced zoom logic
+      if (dangerRadiusMeters < 4) {
+        zoomFactor = 1 + (4 - dangerRadiusMeters) * 0.5;
+      } else {
+        zoomFactor = Math.min(1, 300 / (dangerRadiusMeters * 10));
+      }
+      
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(zoomFactor, zoomFactor);
+      ctx.translate(-cx, -cy);
+      
+      drawDangerZone(cx, cy);
+      drawRadiationWaves(cx, cy);
+      drawVisibleTower(cx, cy);
+      
+      ctx.restore();
+      
+      // Update labels
+      dangerLabel.textContent = `${dangerRadiusMeters.toFixed(1)}m`;
+      if (zoomFactor > 1) {
+        zoomLabel.textContent = `(Zoomed ${zoomFactor.toFixed(1)}x)`;
+      } else {
+        zoomLabel.textContent = '';
+      }
+    }
+
+    function animateMonitor() {
+      pulse += 0.05;
+      drawHeatmap();
+      requestAnimationFrame(animateMonitor);
+    }
+
+    input.addEventListener('input', () => {
+      dangerRadiusMeters = Math.min(100, Math.max(0, parseFloat(input.value)));
+      input.value = dangerRadiusMeters.toFixed(1);
+    });
+
+    // Initialize when page loads
     document.addEventListener('DOMContentLoaded', function() {
       updateRadiation(5);
+      animateMonitor();
     });
 
     document.addEventListener("contextmenu", function (e) {
