@@ -675,7 +675,7 @@
       <label for="eirpInput">EIRP (Watt)</label>
       <input type="text" id="eirpInput" placeholder="Enter the EIRP (W)">
 
-      <label for="frequency">Frequency (Valid Range: 30 MHz – 300,000 MHz) </label>
+      <label for="frequency">Frequency (Valid Range: 0.1 MHz – 300,000 MHz) </label>
       <input type="text" id="frequency" placeholder="Enter the frequency (MHz)">
 
       <label for="standard">Choose a safety standard</label>
@@ -1196,62 +1196,100 @@
       }
 
       let s_limit;
+      let r;
 
-      switch (standard) {
-        case "icnirp_general":
-          s_limit = (freq >= 30 && freq <= 400) ? 2 :
-                    (freq > 400 && freq <= 2000) ? freq / 200 :
-                    (freq > 2000 && freq <= 300000) ? 10 : null;
-          break;
-        case "icnirp_occupational":
-          s_limit = (freq >= 30 && freq <= 400) ? 10 :
-                    (freq > 400 && freq <= 2000) ? freq / 40 :
-                    (freq > 2000 && freq <= 300000) ? 50 : null;
-          break;
-        case "icnirp_general_local":
-          if (freq >= 30 && freq <= 400) {
-            s_limit = 10;
-          } else if (freq > 400 && freq <= 2000) {
-            s_limit = 0.058  * Math.pow(freq, 0.86);
-          } else if (freq > 2000 && freq <= 6000) {
-            s_limit = 40;
-          } else if (freq > 6000 && freq < 300000) {
-            s_limit = 55 / Math.pow(freq / 1000, 0.177);
-          } else if (freq >= 300000) {
-            s_limit = 20;
-          }
-          break;
-        case "icnirp_occupational_local":
-          if (freq >= 30 && freq <= 400) {
-            s_limit = 50;
-          } else if (freq > 400 && freq <= 2000) {
-            s_limit = 0.29 * Math.pow(freq, 0.86);
-          } else if (freq > 2000 && freq <= 6000) {
-            s_limit = 200;
-          } else if (freq > 6000 && freq < 300000) {
-            s_limit = 275 / Math.pow(freq / 1000, 0.177);
-          } else if (freq >= 300000) {
-            s_limit = 100;
-          }
-          break;
-        case "custom":
-          s_limit = parseFloat(document.getElementById("customSLimit").value);
-          if (isNaN(s_limit) || s_limit <= 0) {
-            document.getElementById("distanceResult").textContent = "Invalid power density.";
+      // Handle frequencies between 0.1 MHz and 30 MHz
+      if (freq >= 0.1 && freq <= 30) {
+        let E;
+        switch (standard) {
+          case "icnirp_general": // Whole body - General Public
+            E = 300 / Math.pow(freq, 0.7);
+            r = Math.sqrt(30 * inputEIRP) / E;
+            break;
+          case "icnirp_occupational": // Whole body - Occupational
+            E = 660 / Math.pow(freq, 0.7);
+            r = Math.sqrt(30 * inputEIRP) / E;
+            break;
+          case "icnirp_general_local": // Local exposure - General Public
+            E = 671 / Math.pow(freq, 0.7);
+            r = Math.sqrt(30 * inputEIRP) / E;
+            break;
+          case "icnirp_occupational_local": // Local exposure - Occupational
+            E = 1504 / Math.pow(freq, 0.7);
+            r = Math.sqrt(30 * inputEIRP) / E;
+            break;
+          case "custom":
+            s_limit = parseFloat(document.getElementById("customSLimit").value);
+            if (isNaN(s_limit) || s_limit <= 0) {
+              document.getElementById("distanceResult").textContent = "Invalid power density.";
+              return;
+            }
+            r = Math.sqrt(inputEIRP / (4 * Math.PI * s_limit));
+            break;
+          default:
+            document.getElementById("distanceResult").textContent = "Invalid standard.";
             return;
-          }
-          break;
-        default:
-          document.getElementById("distanceResult").textContent = "Invalid standard.";
+        }
+      } 
+      // Handle frequencies above 30 MHz 
+      else {
+        switch (standard) {
+          case "icnirp_general":
+            s_limit = (freq >= 30 && freq <= 400) ? 2 :
+                      (freq > 400 && freq <= 2000) ? freq / 200 :
+                      (freq > 2000 && freq <= 300000) ? 10 : null;
+            break;
+          case "icnirp_occupational":
+            s_limit = (freq >= 30 && freq <= 400) ? 10 :
+                      (freq > 400 && freq <= 2000) ? freq / 40 :
+                      (freq > 2000 && freq <= 300000) ? 50 : null;
+            break;
+          case "icnirp_general_local":
+            if (freq >= 30 && freq <= 400) {
+              s_limit = 10;
+            } else if (freq > 400 && freq <= 2000) {
+              s_limit = 0.058  * Math.pow(freq, 0.86);
+            } else if (freq > 2000 && freq <= 6000) {
+              s_limit = 40;
+            } else if (freq > 6000 && freq < 300000) {
+              s_limit = 55 / Math.pow(freq / 1000, 0.177);
+            } else if (freq >= 300000) {
+              s_limit = 20;
+            }
+            break;
+          case "icnirp_occupational_local":
+            if (freq >= 30 && freq <= 400) {
+              s_limit = 50;
+            } else if (freq > 400 && freq <= 2000) {
+              s_limit = 0.29 * Math.pow(freq, 0.86);
+            } else if (freq > 2000 && freq <= 6000) {
+              s_limit = 200;
+            } else if (freq > 6000 && freq < 300000) {
+              s_limit = 275 / Math.pow(freq / 1000, 0.177);
+            } else if (freq >= 300000) {
+              s_limit = 100;
+            }
+            break;
+          case "custom":
+            s_limit = parseFloat(document.getElementById("customSLimit").value);
+            if (isNaN(s_limit) || s_limit <= 0) {
+              document.getElementById("distanceResult").textContent = "Invalid power density.";
+              return;
+            }
+            break;
+          default:
+            document.getElementById("distanceResult").textContent = "Invalid standard.";
+            return;
+        }
+
+        if (!s_limit || s_limit <= 0) {
+          document.getElementById("distanceResult").textContent = "Frequency out of supported range.";
           return;
+        }
+
+        r = Math.sqrt(inputEIRP / (4 * Math.PI * s_limit));
       }
 
-      if (!s_limit || s_limit <= 0) {
-        document.getElementById("distanceResult").textContent = "Frequency out of supported range.";
-        return;
-      }
-
-      const r = Math.sqrt(inputEIRP / (4 * Math.PI * s_limit));
       document.getElementById("distanceResult").textContent = r.toFixed(2) + " meters";
       
       // Update the visualizer with the calculated distance
